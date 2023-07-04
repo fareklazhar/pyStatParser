@@ -16,8 +16,7 @@ PATTERNS = {
 
 
 def word_class(word):
-    for tag, p in PATTERNS.iteritems():
-        if p.match(word) is not None:
-            return tag
-    
-    return '_RARE_'
+    return next(
+        (tag for tag, p in PATTERNS.iteritems() if p.match(word) is not None),
+        '_RARE_',
+    )

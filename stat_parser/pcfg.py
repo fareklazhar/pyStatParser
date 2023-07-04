@@ -19,12 +19,12 @@ class PCFG:
     def __build_caches(self):
         self.N = set()
         self.binary_rules = defaultdict(list)
-        
+
         for x, _ in self.q1.keys():
             self.N.add(x)
-        
+
         for x, y1, y2 in self.q2.keys():
-            self.N.update(set([x, y1, y2]))
+            self.N.update({x, y1, y2})
             self.binary_rules[x].append((y1, y2))
     
     def learn_from_treebanks(self, treebanks):

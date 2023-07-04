@@ -4,10 +4,7 @@ Extract the words from a tree and reverse the tokenization
 
 def get_words(tree):
     # Assume well formed
-    if len(tree) == 2:
-        return [tree[1]]
-    else:
-        return get_words(tree[1]) + get_words(tree[2])
+    return [tree[1]] if len(tree) == 2 else get_words(tree[1]) + get_words(tree[2])
 
 
 LEFT = {
