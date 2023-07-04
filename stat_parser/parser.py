@@ -40,7 +40,7 @@ def backtrace(back, bp):
 
 def CKY(pcfg, norm_words):
     x, n = [("", "")] + norm_words, len(norm_words)
-    
+
     # Charts
     pi = defaultdict(float)
     bp = defaultdict(tuple)
@@ -50,7 +50,7 @@ def CKY(pcfg, norm_words):
             if (X, norm) in pcfg.q1:
                 pi[i, i, X] = pcfg.q1[X, norm]
                 bp[i, i, X] = (X, word, i, i)
-    
+
     # Dynamic program
     for l in range(1, n):
         for i in range(1, n-l+1):
@@ -66,11 +66,11 @@ def CKY(pcfg, norm_words):
                             if pi[i  , s, Y] > 0.0
                             if pi[s+1, j, Z] > 0.0
                 ])
-                
+
                 if score > 0.0:
                     bp[i, j, X], pi[i, j, X] = back, score
-    
-    _, top = max([(pi[1, n, X], bp[1, n, X]) for X in pcfg.N])
+
+    _, top = max((pi[1, n, X], bp[1, n, X]) for X in pcfg.N)
     return backtrace(top, bp)
 
 
@@ -78,14 +78,11 @@ class Parser:
     def __init__(self, pcfg=None):
         if pcfg is None:
             pcfg = build_model()
-        
+
         self.pcfg = pcfg
         self.tokenizer = PennTreebankTokenizer()
-        
-        if nltk_is_available:
-            self.parse = self.nltk_parse
-        else:
-            self.parse = self.raw_parse
+
+        self.parse = self.nltk_parse if nltk_is_available else self.raw_parse
     
     def norm_parse(self, sentence):
         words = self.tokenizer.tokenize(sentence)

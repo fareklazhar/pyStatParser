@@ -54,41 +54,41 @@ class PennTreebankTokenizer:
         text = re.sub(r'^\"', r'``', text)
         text = re.sub(r'(``)', r' \1 ', text)
         text = re.sub(r'([ (\[{<])"', r'\1 `` ', text)
-        
+
         #punctuation
         text = re.sub(r'([:,])([^\d])', r' \1 \2', text)
         text = re.sub(r'\.\.\.', r' ... ', text)
         text = re.sub(r'[;@#$%&]', r' \g<0> ', text)
         text = re.sub(r'([^\.])(\.)([\]\)}>"\']*)\s*$', r'\1 \2\3 ', text)
         text = re.sub(r'[?!]', r' \g<0> ', text)
-        
+
         text = re.sub(r"([^'])' ", r"\1 ' ", text)
-        
+
         #parens, brackets, etc.
         text = re.sub(r'[\]\[\(\)\{\}\<\>]', r' \g<0> ', text)
         text = re.sub(r'--', r' -- ', text)
-        
+
         #add extra space to make things easier
-        text = " " + text + " "
-        
+        text = f" {text} "
+
         #ending quotes
         text = re.sub(r'"', " '' ", text)
         text = re.sub(r'(\S)(\'\')', r'\1 \2 ', text)
-        
+
         text = re.sub(r"([^' ])('[sS]|'[mM]|'[dD]|') ", r"\1 \2 ", text)
         text = re.sub(r"([^' ])('ll|'LL|'re|'RE|'ve|'VE|n't|N'T) ", r"\1 \2 ",
                       text)
-        
+
         for regexp in self.CONTRACTIONS2:
             text = regexp.sub(r' \1 \2 ', text)
         for regexp in self.CONTRACTIONS3:
             text = regexp.sub(r' \1 \2 ', text)
-        
+
         # We are not using CONTRACTIONS4 since
         # they are also commented out in the SED scripts
         # for regexp in self.CONTRACTIONS4:
         #     text = regexp.sub(r' \1 \2 \3 ', text)
-        
+
         words = []
         tokens = text.split()
         skip = False
@@ -96,18 +96,16 @@ class PennTreebankTokenizer:
         for i, t in enumerate(tokens):
             if skip:
                 skip = False
-            
-            # Tokenization Exceptions
+
             elif t == '&' and len(tokens[i+1]) == 1:
-                words[-1] += '&' + tokens[i+1]
+                words[-1] += f'&{tokens[i + 1]}'
                 skip = True
             elif t == '#':
-                words.append('#' + tokens[i+1])
+                words.append(f'#{tokens[i + 1]}')
                 skip = True
             elif t == "'s" and words[-1].isdigit():
                 words[-1] += t
-            
-            # Special Penn symbols: keep track of original in tuple
+
             elif t in SYM_MAP:
                 words.append((SYM_MAP[t], t))
             elif t == '"':
@@ -117,8 +115,8 @@ class PennTreebankTokenizer:
                 else:
                     start_quotes = True
                     words.append(('``', t))
-            
+
             else:
                 words.append(t)
-        
+
         return words
